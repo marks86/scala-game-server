@@ -1,9 +1,9 @@
 package com.gmail.namavirs86.app
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import com.gmail.namavirs86.app.Definitions.{GamePlayRequest, RequestType}
-import com.gmail.namavirs86.app.Definitions.RequestType.{INIT, PLAY, RequestType}
-import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, JsonFormat, JsonReader, RootJsonFormat}
+import com.gmail.namavirs86.game.card.core.Definitions.{RequestContext, RequestType}
+import com.gmail.namavirs86.game.card.core.Definitions.RequestType.RequestType
+import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, JsonFormat, RootJsonFormat}
 
 trait JsonSupport extends SprayJsonSupport {
   // import the default encoders for primitive types (Int, String, Lists etc)
@@ -22,5 +22,5 @@ trait JsonSupport extends SprayJsonSupport {
     }
   }
 
-  implicit val gamePlayRequestJsonFormat: RootJsonFormat[GamePlayRequest] = jsonFormat5(GamePlayRequest)
+  implicit val gamePlayRequestJsonFormat: RootJsonFormat[RequestContext] = jsonFormat5(RequestContext)
 }

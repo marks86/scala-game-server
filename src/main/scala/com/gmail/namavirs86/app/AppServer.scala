@@ -11,9 +11,11 @@ import scala.util.{Failure, Success}
 
 object AppServer extends App with GameRoutes {
 
-  implicit val system: ActorSystem = ActorSystem("helloAkkaHttpServer")
+  implicit val system: ActorSystem = ActorSystem("appServer")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext: ExecutionContext = system.dispatcher
+
+  val games = Loader.load(system)
 
   lazy val routes: Route = gameRoutes
 
@@ -30,3 +32,5 @@ object AppServer extends App with GameRoutes {
 
   Await.result(system.whenTerminated, Duration.Inf)
 }
+
+//'{"request": "PLAY", "gameId": "bj", "requestId": 0, "action": "DEAL", "bet": 0.01}'

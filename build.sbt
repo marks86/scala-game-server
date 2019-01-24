@@ -23,3 +23,4 @@ lazy val root = (project in file(".")).
     )
   )
   .dependsOn(RootProject(file("../scala-game-card-core")))
+  .dependsOn(RootProject(file("../scala-game-card-blackjack")))
