@@ -1,23 +1,25 @@
 package com.gmail.namavirs86.app.controllers
 
+import scala.util.Random
+import akka.util.Timeout
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.server.Directives.{as, entity, onSuccess, pathEnd, pathPrefix}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
-import akka.util.Timeout
-import com.gmail.namavirs86.app.Definitions.Games
+import akka.pattern.ask
+
 import com.gmail.namavirs86.game.card.core.Definitions.{Flow, GameContext, GameId, RequestContext}
 import com.gmail.namavirs86.game.card.core.Game
-
-import scala.concurrent.duration._
-import akka.pattern.ask
+import com.gmail.namavirs86.app.Definitions.Games
 import com.gmail.namavirs86.app.protocols.GameJsonProtocol
 import com.gmail.namavirs86.app.repositories.GameRepo
 
-import scala.concurrent.Future
-import scala.util.Random
 
 // @TODO: add available actions to response
 // @TODO: add user balance
@@ -54,7 +56,7 @@ trait GameController extends GameJsonProtocol with GameRepo {
         response = None,
         rng = new Random(),
       )
-    }(system.dispatcher)
+    }
   }
 
   private def gameRequestHandler(request: RequestContext): Route = {
