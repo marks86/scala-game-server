@@ -1,5 +1,7 @@
 package com.gmail.namavirs86.app
 
+import akka.Done
+
 import scala.util.Random
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -18,6 +20,8 @@ import com.gmail.namavirs86.game.card.core.Game
 import spray.json.JsString
 
 
+// @TODO: add game context saving to contextMap
+// @TODO: add available actions to response
 // @TODO: add user balance
 // @TODO: each request action validation
 // @TODO: add init request (probably)
@@ -36,6 +40,12 @@ trait GameRoutes extends JsonSupport {
   //  (fake) async database query api
   def fetchGameContext(gameId: GameId, userId: Long): Future[Option[GameContext]] = Future {
     contextMap.get(userId)
+  }(system.dispatcher)
+
+  //  (fake) async database query api
+  def saveGameContext(gameId: GameId, userId: Long, gameContext: GameContext): Future[Done] = Future {
+    contextMap += userId → gameContext
+    Done
   }(system.dispatcher)
 
   def createFlow(requestContext: RequestContext): Future[Flow] = {
@@ -68,9 +78,9 @@ trait GameRoutes extends JsonSupport {
                     (gameRef ? Game.RequestPlay(flow)).mapTo[Game.ResponsePlay]
 
                   onSuccess(responsePlay) { responsePlay =>
-//                    log.info(responsePlay.flow.response.toString)
-
-//                    complete(StatusCodes.OK)
+                    val gameId = responsePlay.flow.requestContext.gameId
+                    val gameContext = responsePlay.flow.gameContext
+                    saveGameContext(gameId, 0, gameContext.get)
                     complete(responsePlay.flow.response)
                   }
                 }
