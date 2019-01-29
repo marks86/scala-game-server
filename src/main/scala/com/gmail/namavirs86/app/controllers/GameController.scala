@@ -1,6 +1,5 @@
 package com.gmail.namavirs86.app.controllers
 
-import akka.Done
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.server.Directives.{as, entity, onSuccess, pathEnd, pathPrefix}
@@ -15,17 +14,18 @@ import com.gmail.namavirs86.game.card.core.Game
 import scala.concurrent.duration._
 import akka.pattern.ask
 import com.gmail.namavirs86.app.protocols.GameJsonProtocol
+import com.gmail.namavirs86.app.repositories.GameRepo
 
 import scala.concurrent.Future
 import scala.util.Random
 
-// @TODO: add game context saving to contextMap
 // @TODO: add available actions to response
 // @TODO: add user balance
 // @TODO: each request action validation
 // @TODO: add init request (probably)
+// @TODO: exception handling
 
-trait GameController extends GameJsonProtocol {
+trait GameController extends GameJsonProtocol with GameRepo {
 
   implicit def system: ActorSystem
 
@@ -34,20 +34,16 @@ trait GameController extends GameJsonProtocol {
 
   def games: Games
 
-  var contextMap = Map.empty[Long, GameContext]
+  lazy val gameRoutes: Route =
+    pathEnd {
+      get {
+        entity(as[RequestContext]) { request =>
+          gameRequestHandler(request)
+        }
+      }
+    }
 
-  //  (fake) async database query api
-  def fetchGameContext(gameId: GameId, userId: Long): Future[Option[GameContext]] = Future {
-    contextMap.get(userId)
-  }(system.dispatcher)
-
-  //  (fake) async database query api
-  def saveGameContext(gameId: GameId, userId: Long, gameContext: GameContext): Future[Done] = Future {
-    contextMap += userId → gameContext
-    Done
-  }(system.dispatcher)
-
-  def createFlow(requestContext: RequestContext): Future[Flow] = {
+  private def createFlow(requestContext: RequestContext): Future[Flow] = {
     val gameId = requestContext.gameId
     val gameContextFuture = fetchGameContext(gameId, 0)
 
@@ -61,33 +57,27 @@ trait GameController extends GameJsonProtocol {
     }(system.dispatcher)
   }
 
-  lazy val gameRoutes: Route =
-    pathEnd {
-      get {
-        entity(as[RequestContext]) { requestContext =>
-          val gameId = requestContext.gameId
+  private def gameRequestHandler(request: RequestContext): Route = {
+    val gameId = request.gameId
 
-          games.get(gameId) match {
-            case Some(gameRef) ⇒
-              val flowFuture = createFlow(requestContext)
+    games.get(gameId) match {
+      case Some(gameRef) ⇒
+        val flowFuture = createFlow(request)
 
-              onSuccess(flowFuture) { flow =>
-                val responsePlay: Future[Game.ResponsePlay] =
-                  (gameRef ? Game.RequestPlay(flow)).mapTo[Game.ResponsePlay]
+        onSuccess(flowFuture) { flow =>
+          val responsePlay: Future[Game.ResponsePlay] =
+            (gameRef ? Game.RequestPlay(flow)).mapTo[Game.ResponsePlay]
 
-                onSuccess(responsePlay) { responsePlay =>
-                  val gameId = responsePlay.flow.requestContext.gameId
-                  val gameContext = responsePlay.flow.gameContext
-                  saveGameContext(gameId, 0, gameContext.get)
-                  complete(responsePlay.flow.response)
-                }
-              }
-            case None => complete("No game found")
+          onSuccess(responsePlay) { responsePlay =>
+            val gameId = responsePlay.flow.requestContext.gameId
+            val gameContext = responsePlay.flow.gameContext
+            updateGameContext(gameId, 0, gameContext.get)
+            complete(responsePlay.flow.response)
           }
         }
-      }
+      case None => complete("No game found")
     }
-
+  }
 }
 
 //curl -H "Content-Type: application/json" -X GET -d '{"request": "PLAY", "gameId": "bj", "requestId": 0, "action": "DEAL", "bet": 0.01}' http://localhost:8080/game
