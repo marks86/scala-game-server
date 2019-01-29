@@ -7,6 +7,7 @@ import akka.stream.ActorMaterializer
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.io.StdIn
 import scala.util.{Failure, Success}
 
 object AppServer extends App with GameRoutes {
@@ -30,7 +31,11 @@ object AppServer extends App with GameRoutes {
       system.terminate()
   }
 
-  Await.result(system.whenTerminated, Duration.Inf)
-}
+  StdIn.readLine()
 
-//'{"request": "PLAY", "gameId": "bj", "requestId": 0, "action": "DEAL", "bet": 0.01}'
+  serverBinding
+    .flatMap(_.unbind()) // trigger unbinding from the port
+    .onComplete(_ => system.terminate()) // and shutdown when done
+
+//  Await.result(system.whenTerminated, Duration.Inf)
+}
