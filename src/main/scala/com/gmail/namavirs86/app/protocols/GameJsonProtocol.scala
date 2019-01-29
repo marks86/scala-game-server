@@ -1,14 +1,14 @@
-package com.gmail.namavirs86.app
+package com.gmail.namavirs86.app.protocols
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.gmail.namavirs86.game.card.core.Definitions.Outcome.Outcome
 import com.gmail.namavirs86.game.card.core.Definitions.Rank.Rank
-import com.gmail.namavirs86.game.card.core.Definitions._
 import com.gmail.namavirs86.game.card.core.Definitions.RequestType.RequestType
 import com.gmail.namavirs86.game.card.core.Definitions.Suit.Suit
-import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsString, JsValue, JsonFormat, JsonWriter, RootJsonFormat, deserializationError}
+import com.gmail.namavirs86.game.card.core.Definitions._
+import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, JsonFormat, RootJsonFormat}
 
-trait JsonSupport extends SprayJsonSupport {
+trait GameJsonProtocol extends SprayJsonSupport {
   // import the default encoders for primitive types (Int, String, Lists etc)
   import DefaultJsonProtocol._
 

@@ -1,16 +1,16 @@
 package com.gmail.namavirs86.app
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.server.Route
-import akka.stream.ActorMaterializer
-
-import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.io.StdIn
 import scala.util.{Failure, Success}
+import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.server.Directives.pathPrefix
+import akka.http.scaladsl.server.Route
+import akka.stream.ActorMaterializer
+import com.gmail.namavirs86.app.controllers.GameController
 
-object AppServer extends App with GameRoutes {
+object AppServer extends App with GameController {
 
   implicit val system: ActorSystem = ActorSystem("appServer")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -18,7 +18,9 @@ object AppServer extends App with GameRoutes {
 
   val games = Loader.load(system)
 
-  lazy val routes: Route = gameRoutes
+  lazy val routes: Route = pathPrefix("game") {
+    gameRoutes
+  }
 
   val serverBinding: Future[Http.ServerBinding] = Http().bindAndHandle(routes, "localhost", 8080)
 
@@ -37,5 +39,5 @@ object AppServer extends App with GameRoutes {
     .flatMap(_.unbind()) // trigger unbinding from the port
     .onComplete(_ => system.terminate()) // and shutdown when done
 
-//  Await.result(system.whenTerminated, Duration.Inf)
+  //  Await.result(system.whenTerminated, Duration.Inf)
 }
