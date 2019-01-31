@@ -2,23 +2,23 @@ package com.gmail.namavirs86.app.controllers
 
 import scala.util.Random
 import akka.util.Timeout
+
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-
 import akka.actor.ActorSystem
 import akka.event.Logging
-import akka.http.scaladsl.server.Directives.{as, entity, onSuccess, pathEnd, pathPrefix}
+import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.server.Directives.{as, entity, onSuccess, pathEnd}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.pattern.ask
-
-import com.gmail.namavirs86.game.card.core.Definitions.{Flow, GameContext, GameId, RequestContext}
+import com.gmail.namavirs86.game.card.core.Definitions.{Flow, RequestContext}
 import com.gmail.namavirs86.game.card.core.Game
 import com.gmail.namavirs86.app.Definitions.Games
-import com.gmail.namavirs86.app.protocols.GameJsonProtocol
 import com.gmail.namavirs86.app.repositories.GameRepo
+import com.gmail.namavirs86.game.card.core.protocols.CoreJsonProtocol
 
 
 // @TODO: add available actions to response
@@ -27,7 +27,7 @@ import com.gmail.namavirs86.app.repositories.GameRepo
 // @TODO: add init request (probably)
 // @TODO: exception handling
 
-trait GameController extends GameJsonProtocol with GameRepo {
+trait GameController extends CoreJsonProtocol with GameRepo {
 
   implicit def system: ActorSystem
 
@@ -71,10 +71,15 @@ trait GameController extends GameJsonProtocol with GameRepo {
             (gameRef ? Game.RequestPlay(flow)).mapTo[Game.ResponsePlay]
 
           onSuccess(responsePlay) { responsePlay =>
-            val gameId = responsePlay.flow.requestContext.gameId
-            val gameContext = responsePlay.flow.gameContext
+            val flow = responsePlay.flow
+            val gameId = flow.requestContext.gameId
+            val gameContext = flow.gameContext
             updateGameContext(gameId, 0, gameContext)
-            complete(responsePlay.flow.response)
+
+            flow.response match {
+              case Some(response) ⇒ complete(response)
+              case None ⇒ complete(StatusCodes.OK)
+            }
           }
         }
       case None => complete("No game found")
