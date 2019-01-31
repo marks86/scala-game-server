@@ -22,10 +22,6 @@ import com.gmail.namavirs86.game.card.core.protocols.CoreJsonProtocol
 
 
 // @TODO: add available actions to response
-// @TODO: add user balance
-// @TODO: each request action validation
-// @TODO: add init request (probably)
-// @TODO: exception handling
 
 trait GameController extends CoreJsonProtocol with GameRepo {
 
@@ -47,7 +43,7 @@ trait GameController extends CoreJsonProtocol with GameRepo {
 
   private def createFlow(requestContext: RequestContext): Future[Flow] = {
     val gameId = requestContext.gameId
-    val gameContextFuture = fetchGameContext(gameId, 0)
+    val gameContextFuture = fetchGameContext(gameId, userId = 0)
 
     gameContextFuture.map { gameContext =>
       Flow(
@@ -74,7 +70,7 @@ trait GameController extends CoreJsonProtocol with GameRepo {
             val flow = responsePlay.flow
             val gameId = flow.requestContext.gameId
             val gameContext = flow.gameContext
-            updateGameContext(gameId, 0, gameContext)
+            updateGameContext(gameId, userId = 0, gameContext)
 
             flow.response match {
               case Some(response) ⇒ complete(response)
