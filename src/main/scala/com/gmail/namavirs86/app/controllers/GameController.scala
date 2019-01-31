@@ -73,7 +73,7 @@ trait GameController extends GameJsonProtocol with GameRepo {
           onSuccess(responsePlay) { responsePlay =>
             val gameId = responsePlay.flow.requestContext.gameId
             val gameContext = responsePlay.flow.gameContext
-            updateGameContext(gameId, 0, gameContext.get)
+            updateGameContext(gameId, 0, gameContext)
             complete(responsePlay.flow.response)
           }
         }

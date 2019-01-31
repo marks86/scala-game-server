@@ -9,15 +9,15 @@ import com.gmail.namavirs86.game.card.core.Definitions.{GameContext, GameId}
 
 trait GameRepo {
 
-  val contextMap = mutable.Map.empty[Long, GameContext]
+  val contextMap = mutable.Map.empty[Long, Option[GameContext]]
 
   //  (fake) async database query api
   def fetchGameContext(gameId: GameId, userId: Long): Future[Option[GameContext]] = Future {
-    contextMap.get(userId)
+    contextMap.getOrElse(userId, None)
   }
 
   //  (fake) async database query api
-  def updateGameContext(gameId: GameId, userId: Long, gameContext: GameContext): Future[Done] = Future {
+  def updateGameContext(gameId: GameId, userId: Long, gameContext: Option[GameContext]): Future[Done] = Future {
     contextMap(userId) = gameContext
     Done
   }
