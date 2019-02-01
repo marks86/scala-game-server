@@ -1,8 +1,8 @@
 lazy val akkaHttpVersion = "10.1.7"
 lazy val akkaVersion = "2.5.19"
 
-lazy val root = (project in file(".")).
-  settings(
+lazy val root = (project in file("."))
+  .settings(
     inThisBuild(List(
       version := "1.0.0",
       organization := "com.gmail.namavirs86",
@@ -22,5 +22,4 @@ lazy val root = (project in file(".")).
       "com.lihaoyi" %% "pprint" % "0.5.3"
     )
   )
-  .dependsOn(RootProject(file("../scala-game-card-core")))
-  .dependsOn(RootProject(file("../scala-game-card-blackjack")))
+  .dependsOn(RootProject(uri("https://github.com/marks86/scala-game-card-blackjack.git")))
