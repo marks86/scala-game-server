@@ -65,3 +65,4 @@ curl -H "Content-Type: application/json" -X GET -d '{"request": "PLAY", "gameId"
 ### Further work
 
 * Add stakes
+* Add authentication

@@ -22,7 +22,6 @@ import com.gmail.namavirs86.game.card.core.protocols.CoreJsonProtocol
 
 
 // @TODO: add available actions to response
-
 trait GameController extends CoreJsonProtocol with GameRepo {
 
   implicit def system: ActorSystem
@@ -62,6 +61,7 @@ trait GameController extends CoreJsonProtocol with GameRepo {
       case Some(gameRef) ⇒
         val flowFuture = createFlow(request)
 
+        // @TODO: using scala-async will be more readable, check
         onSuccess(flowFuture) { flow =>
           val responsePlay: Future[Game.ResponsePlay] =
             (gameRef ? Game.RequestPlay(flow)).mapTo[Game.ResponsePlay]
