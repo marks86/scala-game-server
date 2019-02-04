@@ -17,7 +17,7 @@ sbt run
 ### Playing
 
 The app already includes [Blackjack](https://github.com/marks86/scala-game-card-blackjack) card game.
-Supported action: DEAL, HIT, STAND
+Supported actions: DEAL, HIT, STAND
 
 *Deal request example:*
 ```javascript
