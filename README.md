@@ -17,8 +17,8 @@ sbt run
 ### Playing
 
 The app already includes [scala-game-card-blackjack](https://github.com/marks86/scala-game-card-blackjack).
-Supported actions: DEAL, HIT, STAND
-Since request validation isn't implemented in the game yet, only valid action sequence will work. 
+Since request validation isn't implemented in the game yet, only valid action sequence will work.
+Supported actions: DEAL, HIT, STAND.
 
 *Deal request example:*
 ```javascript
