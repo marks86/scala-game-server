@@ -42,7 +42,6 @@ curl -H "Content-Type: application/json" -X GET -d '{"request": "PLAY", "gameId"
     "hasBJ": false,
     "value": 14
   },
-  "outcome": "PLAYER",
   "player": {
     "hand": [
       {
@@ -58,6 +57,7 @@ curl -H "Content-Type: application/json" -X GET -d '{"request": "PLAY", "gameId"
     "value": 21
   },
   "roundEnded": true,
-  "totalWin": 0.0
+  "outcome": "PLAYER",
+  "totalWin": 1.5
 }
 ```
