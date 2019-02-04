@@ -8,7 +8,7 @@ object Loader {
 
   def load(system: ActorSystem): Games = {
     Map(
-      blackjack.id → system.actorOf(blackjack.props)
+      blackjack.id → system.actorOf(blackjack.props, blackjack.id)
     )
   }
 
