@@ -1,5 +1,5 @@
 
-## Simple RESTful game server application based on Akka HTTP and Spray JSON
+## Simple RESTful game server app based on Akka HTTP and Spray JSON
 
 The game should implement: [scala-game-card-core](https://github.com/marks86/scala-game-card-core)
 
