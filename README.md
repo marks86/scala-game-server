@@ -61,3 +61,7 @@ curl -H "Content-Type: application/json" -X GET -d '{"request": "PLAY", "gameId"
   "totalWin": 1.5
 }
 ```
+
+### Further work
+
+* Add stakes
