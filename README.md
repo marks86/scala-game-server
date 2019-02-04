@@ -67,3 +67,4 @@ curl -H "Content-Type: application/json" -X GET -d '{"request": "PLAY", "gameId"
 
 * Add stakes
 * Add authentication
+* User balance
