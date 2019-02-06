@@ -14,7 +14,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.pattern.ask
-import com.gmail.namavirs86.game.card.core.Definitions.{Flow, RequestContext}
+import com.gmail.namavirs86.game.card.core.Definitions.{Flow, GameContext, RequestContext}
 import com.gmail.namavirs86.game.card.core.Game
 import com.gmail.namavirs86.app.Definitions.Games
 import com.gmail.namavirs86.app.repositories.GameRepo
@@ -40,7 +40,7 @@ trait GameController extends CoreJsonProtocol with GameRepo {
       }
     }
 
-  private def createFlow(requestContext: RequestContext): Future[Flow] = {
+  private def createFlow(requestContext: RequestContext): Future[Flow[GameContext]] = {
     val gameId = requestContext.gameId
     val gameContextFuture = fetchGameContext(gameId, userId = 0)
 
@@ -63,8 +63,8 @@ trait GameController extends CoreJsonProtocol with GameRepo {
 
         // @TODO: using scala-async will be more readable, check
         onSuccess(flowFuture) { flow =>
-          val responsePlay: Future[Game.ResponsePlay] =
-            (gameRef ? Game.RequestPlay(flow)).mapTo[Game.ResponsePlay]
+          val responsePlay: Future[Game.ResponsePlay[GameContext]] =
+            (gameRef ? Game.RequestPlay(flow)).mapTo[Game.ResponsePlay[GameContext]]
 
           onSuccess(responsePlay) { responsePlay =>
             val flow = responsePlay.flow
