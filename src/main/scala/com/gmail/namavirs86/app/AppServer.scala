@@ -18,7 +18,7 @@ object AppServer extends App with GameController {
 
   val games = Loader.load(system)
 
-  lazy val routes: Route = pathPrefix("game") {
+  lazy val routes: Route = pathPrefix(pm = "game") {
     gameRoutes
   }
 

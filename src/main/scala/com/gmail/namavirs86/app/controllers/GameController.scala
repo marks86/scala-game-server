@@ -5,7 +5,6 @@ import akka.util.Timeout
 
 import scala.concurrent._
 import ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.model.StatusCodes
@@ -14,6 +13,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.pattern.ask
+import com.gmail.namavirs86.app.Config
 import com.gmail.namavirs86.game.card.core.Definitions.{Flow, GameContext, RequestContext}
 import com.gmail.namavirs86.game.card.core.Game
 import com.gmail.namavirs86.app.Definitions.Games
@@ -26,7 +26,7 @@ trait GameController extends CoreJsonProtocol with GameRepo {
 
   implicit def system: ActorSystem
 
-  implicit lazy val timeout: Timeout = Timeout(5.seconds)
+  implicit lazy val timeout: Timeout = Timeout(Config.gameResponseTimeout)
   lazy val log = Logging(system, classOf[GameController])
 
   def games: Games
