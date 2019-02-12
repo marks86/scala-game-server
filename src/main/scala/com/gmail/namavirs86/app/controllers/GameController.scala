@@ -1,8 +1,8 @@
 package com.gmail.namavirs86.app.controllers
 
+
 import scala.util.Random
 import akka.util.Timeout
-
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 import akka.actor.ActorSystem
@@ -13,23 +13,22 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.pattern.ask
-import com.gmail.namavirs86.app.Config
 import com.gmail.namavirs86.game.card.core.Definitions.{Flow, GameContext, RequestContext}
 import com.gmail.namavirs86.game.card.core.Game
+import com.gmail.namavirs86.game.card.core.protocols.CoreJsonProtocol
 import com.gmail.namavirs86.app.Definitions.Games
 import com.gmail.namavirs86.app.repositories.GameRepo
-import com.gmail.namavirs86.game.card.core.protocols.CoreJsonProtocol
-
+import com.gmail.namavirs86.app.Configuration
 
 // @TODO: add available actions to response
 trait GameController extends CoreJsonProtocol with GameRepo {
 
+  def games: Games
+
   implicit def system: ActorSystem
 
-  implicit lazy val timeout: Timeout = Timeout(Config.gameResponseTimeout)
+  implicit lazy val timeout: Timeout = Timeout(Configuration.gameResponseTimeout)
   lazy val log = Logging(system, classOf[GameController])
-
-  def games: Games
 
   lazy val gameRoutes: Route =
     pathEnd {

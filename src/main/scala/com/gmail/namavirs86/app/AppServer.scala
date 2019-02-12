@@ -25,8 +25,8 @@ object AppServer extends App with GameController {
   val serverBinding: Future[Http.ServerBinding] = Http()
     .bindAndHandle(
       routes,
-      Config.defaultInterface,
-      Config.defaultPort
+      Configuration.defaultInterface,
+      Configuration.defaultPort
     )
 
   serverBinding.onComplete {
